@@ -1,0 +1,122 @@
+-- ==========================================
+-- PROPERTY EMPIRE - PUNE EDITION - FINAL DB
+-- Perfect Schema for Fixed Server + English DB
+-- Run this in MySQL Workbench - It will fix all errors
+-- ==========================================
+
+DROP DATABASE IF EXISTS property_empire;
+CREATE DATABASE property_empire CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE property_empire;
+
+-- 1. PLAYERS - Fixed with all columns server expects
+CREATE TABLE players (
+  player_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  token VARCHAR(10) DEFAULT 'V',
+  color VARCHAR(20) DEFAULT '#FF6B00',
+  money INT DEFAULT 1500,
+  net_worth INT DEFAULT 1500,
+  position INT DEFAULT 0,
+  in_jail BOOLEAN DEFAULT FALSE,
+  jail_turns INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. PROPERTIES - 40 Pune Properties
+CREATE TABLE properties (
+  property_id INT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  price INT NOT NULL,
+  rent INT NOT NULL,
+  group_color VARCHAR(20),
+  owner_id INT DEFAULT NULL,
+  houses INT DEFAULT 0,
+  mortgaged BOOLEAN DEFAULT FALSE,
+  FOREIGN KEY (owner_id) REFERENCES players(player_id) ON DELETE SET NULL
+);
+
+-- Insert 40 Pune Properties - ENGLISH ONLY (No Marathi in DB)
+INSERT INTO properties (property_id, name, price, rent, group_color) VALUES
+(0, 'GO', 0, 0, 'special'),
+(1, 'KASBA PETH', 60, 2, 'brown'),
+(2, 'COMMUNITY CHEST', 0, 0, 'special'),
+(3, 'TULSHI BAUG', 60, 4, 'brown'),
+(4, 'INCOME TAX', 200, 0, 'tax'),
+(5, 'PUNE RAILWAY', 200, 25, 'railroad'),
+(6, 'J.M. ROAD', 100, 6, 'lblue'),
+(7, 'CHANCE', 0, 0, 'special'),
+(8, 'FC ROAD', 100, 6, 'lblue'),
+(9, 'DECCAN GYMKHANA', 120, 8, 'lblue'),
+(10, 'JAIL - VISITING', 0, 0, 'special'),
+(11, 'NANA PETH', 140, 10, 'pink'),
+(12, 'PUNE ELECTRIC', 150, 0, 'utility'),
+(13, 'RASTA PETH', 140, 10, 'pink'),
+(14, 'BUDHWAR PETH', 160, 12, 'pink'),
+(15, 'SHIVAJI NAGAR RAILWAY', 200, 25, 'railroad'),
+(16, 'CAMP AREA', 180, 14, 'orange'),
+(17, 'CHANCE', 0, 0, 'special'),
+(18, 'MG ROAD', 180, 14, 'orange'),
+(19, 'KOREGAON PARK', 200, 16, 'orange'),
+(20, 'FREE PARKING', 0, 0, 'special'),
+(21, 'KOTHRUD', 220, 18, 'red'),
+(22, 'CHANCE', 0, 0, 'special'),
+(23, 'BANER', 220, 18, 'red'),
+(24, 'WAKAD', 240, 20, 'red'),
+(25, 'HADAPSAR RAILWAY', 200, 25, 'railroad'),
+(26, 'HINJEWADI', 260, 22, 'yellow'),
+(27, 'WAKAD PHASE 2', 260, 22, 'yellow'),
+(28, 'PUNE WATER', 150, 0, 'utility'),
+(29, 'BAVDHAN', 280, 24, 'yellow'),
+(30, 'GO TO JAIL', 0, 0, 'special'),
+(31, 'AUNDH', 300, 26, 'green'),
+(32, 'PASHAN', 300, 26, 'green'),
+(33, 'COMMUNITY CHEST', 0, 0, 'special'),
+(34, 'BANER HEIGHTS', 320, 28, 'green'),
+(35, 'SHIVAJINAGAR METRO', 200, 25, 'railroad'),
+(36, 'CHANCE', 0, 0, 'special'),
+(37, 'KALYANI NAGAR', 350, 35, 'dblue'),
+(38, 'LUXURY TAX', 100, 0, 'tax'),
+(39, 'VIMAN NAGAR', 400, 50, 'dblue');
+
+-- 3. GAMES
+CREATE TABLE games (
+  game_id INT AUTO_INCREMENT PRIMARY KEY,
+  status VARCHAR(20) DEFAULT 'ACTIVE',
+  total_houses INT DEFAULT 0,
+  total_hotels INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 4. TRANSACTIONS - Fixed with all columns
+CREATE TABLE transactions (
+  txn_id INT AUTO_INCREMENT PRIMARY KEY,
+  game_id INT DEFAULT 1,
+  from_player INT,
+  to_player INT DEFAULT 0,
+  amount INT NOT NULL,
+  type VARCHAR(20) DEFAULT 'BUY',
+  property_id INT DEFAULT NULL,
+  description VARCHAR(255),
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (game_id) REFERENCES games(game_id),
+  FOREIGN KEY (property_id) REFERENCES properties(property_id)
+);
+
+-- Insert default game
+INSERT INTO games (status) VALUES ('ACTIVE');
+
+-- Insert 4 default players - ENGLISH ONLY
+INSERT INTO players (name, token, color, money, net_worth) VALUES
+('Mastani', 'M', '#FF6B00', 1500, 1500),
+('Bajirao', 'B', '#1E3A8A', 1500, 1500),
+('Peshwa', 'P', '#6D0E0E', 1500, 1500),
+('Ahilya', 'A', '#1A4D2E', 1500, 1500);
+
+-- Test queries for faculty demo
+-- SELECT * FROM players;
+-- SELECT * FROM properties;
+-- SELECT * FROM transactions;
+-- SELECT p.name, pr.name, pr.houses FROM players p JOIN properties pr ON pr.owner_id = p.player_id;
+-- SELECT * FROM properties WHERE owner_id IS NOT NULL;
+
+SELECT 'DATABASE CREATED SUCCESSFULLY - 4 TABLES - 40 PROPERTIES - 4 PLAYERS - READY FOR DEMO' AS Status;
